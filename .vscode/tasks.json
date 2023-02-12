@@ -1,0 +1,19 @@
+{
+    "version":  "2.0.0",
+    "type":     "shell",
+    "options":  { "cwd": "${workspaceFolder}" },
+    "presentation": {
+        "reveal": "never",
+        "clear": true,
+    },
+    "problemMatcher": [],
+    "tasks": [
+        {
+            "label":    "open image-viewer.html",
+            "command":  "image-viewer.html",
+            "windows":  { "command": "start \"\" image-viewer.html" },
+            "linux":    { "command": "xdg-open image-viewer.html" },
+            "osx":      { "command": "open image-viewer.html" },
+        }
+    ]
+}

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en-US"><head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script>
+        var object_urls = [];
+        var dir_handle;
+
+        async function refresh_folder_contents() {
+            const old_object_urls = object_urls;
+            object_urls = [];
+            const images = [];
+            await add_dir_images(images, dir_handle);
+            /** @type {HTMLDivElement} */ const e = document.getElementById("images");
+            e.replaceChildren(...images);
+            old_object_urls.forEach(url => URL.revokeObjectURL(url));
+        }
+
+        function create_image(url) {
+            let img = new Image();
+            img.src = url;
+            return img;
+        }
+
+        function create_video(url, mime) {
+            let source = document.createElement("source");
+            source.src = url;
+            source.type = mime;
+
+            let video = document.createElement("video");
+            video.appendChild(source);
+            video.autoplay  = true;
+            video.controls  = true;
+            video.loop      = true;
+            video.muted     = true;
+
+            return video;
+        }
+
+        const warned_exts = {};
+        async function add_dir_images(images, dir) {
+            for await (const handle of dir.values()) {
+                console.log(handle);
+                switch (handle.kind) {
+                    case "file":
+                        let file = await handle.getFile();
+
+                        let url = URL.createObjectURL(file);
+                        object_urls.push(url);
+
+                        const ext = /\.(.+?)$/.exec(handle.name)?.[1]?.toLowerCase();
+                        const is_image = !!"png jpg jpeg gif".split(' ').find(e => ext === e);
+                        switch (ext) {
+                            case "mp4": case "webm":
+                                images.push(create_video(url, `video/${ext}`));
+                                break;
+
+                            case "png": case "gif": case "jfif": case "jpg": case "jpeg": case "webp":
+                                images.push(create_image(url));
+                                break;
+
+                            default:
+                                if (!warned_exts[ext]) console.warn(`unhandled extension: ${ext}`);
+                                warned_exts[ext] = true;
+                                images.push(create_image(url));
+                                break;
+                        }
+
+                        break;
+                    case "directory":
+                        // recurse?
+                        break;
+                    default:
+                        console.error(`invalid handle.kind: ${JSON.stringify(handle.kind)}`);
+                        break;
+                }
+            }
+        }
+
+        async function select_folder() {
+            let new_dir_handle = await window.showDirectoryPicker({
+                id:         "mm-image-viewer",
+                mode:       "read",
+                startIn:    "pictures",
+            });
+
+            if (!new_dir_handle) return;
+            dir_handle = new_dir_handle;
+            console.log(dir_handle);
+
+            await refresh_folder_contents();
+        }
+    </script>
+</head><body>
+    <button onclick="select_folder();" autofocus>Select Folder</button>
+    <div id="images"></div>
+</body></html>
