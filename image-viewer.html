@@ -90,6 +90,22 @@
 
             await refresh_folder_contents();
         }
+
+        function prev_image() { console.log("prev_image"); }
+        function next_image() { console.log("next_image"); }
+
+        addEventListener("keydown", function (ev) {
+            const [META, CTRL, ALT, SHIFT] = [1<<3, 1<<2, 1<<1, 1<<0];
+            let modifiers = (ev.metaKey * META) | (ev.ctrlKey * CTRL) | (ev.altKey * ALT) | (ev.shiftKey * SHIFT);
+            //console.log(modifiers, ev.code, ev);
+
+            if (modifiers === 0) switch (ev.code) {
+                case "ArrowLeft":   case "Left":    ev.preventDefault(); prev_image(); break;
+                case "ArrowRight":  case "Right":   ev.preventDefault(); next_image(); break;
+            } else if (modifiers === CTRL) switch (ev.code) {
+                case "KeyO":                        ev.preventDefault(); select_folder(); break;
+            }
+        });
     </script>
 </head><body>
     <button onclick="select_folder();" autofocus>Select Folder</button>
