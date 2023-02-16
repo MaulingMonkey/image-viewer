@@ -27,6 +27,8 @@
         }
         function prev_image() { current_image_index -= 1; update_image(); }
         function next_image() { current_image_index += 1; update_image(); }
+        function first_image() { current_image_index = 0; update_image(); }
+        function last_image()  { current_image_index = Math.max(0, current_image_elements.length - 1); update_image(); }
 
         function toggle_play() {
             document.getElementById("image-view").querySelectorAll("video").forEach(video => {
@@ -137,14 +139,18 @@
         addEventListener("keydown", function (ev) {
             const [META, CTRL, ALT, SHIFT] = [1<<3, 1<<2, 1<<1, 1<<0];
             let modifiers = (ev.metaKey * META) | (ev.ctrlKey * CTRL) | (ev.altKey * ALT) | (ev.shiftKey * SHIFT);
-            //console.log(modifiers, ev.code, ev);
+            console.log(modifiers, ev.code, ev);
 
             if (modifiers === 0) switch (ev.code) {
                 case "ArrowLeft":   case "Left":    ev.preventDefault(); prev_image(); break;
                 case "ArrowRight":  case "Right":   ev.preventDefault(); next_image(); break;
+                case "Home":                        ev.preventDefault(); first_image(); break;
+                case "End":                         ev.preventDefault(); last_image(); break;
                 case "Space":                       ev.preventDefault(); toggle_play(); break;
             } else if (modifiers === CTRL) switch (ev.code) {
                 case "KeyO":                        ev.preventDefault(); select_folder(); break;
+                case "ArrowLeft":   case "Left":    ev.preventDefault(); first_image(); break;
+                case "ArrowRight":  case "Right":   ev.preventDefault(); last_image(); break;
             }
         });
     </script><style>
