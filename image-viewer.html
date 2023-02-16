@@ -10,12 +10,12 @@
 
         function update_image() {
             current_image_index = Math.max(0, Math.min(current_image_index, current_image_elements.length-1));
-            const next_element = current_image_elements[current_image_index];
-            if (next_element) {
+            const current_element = current_image_elements[current_image_index];
+            if (current_element) {
                 const image_view = document.getElementById("image-view");
-                image_view.replaceChildren(next_element);
-                try { next_element.currentTime = 0; next_element.play(); } catch (e) {} // rewind + resume
-                const filename = document.title = next_element.dataset.filename || "image viewer";
+                image_view.replaceChildren(current_element);
+                try { current_element.currentTime = 0; current_element.play(); } catch (e) {} // rewind + resume
+                const filename = document.title = current_element.dataset.filename || "image viewer";
                 document.body.dataset.screen = "image-view";
                 document.querySelectorAll('[data-text-src="image-index"]'   ).forEach(e => e.textContent = `${current_image_index}`);
                 document.querySelectorAll('[data-text-src="image-no"]'      ).forEach(e => e.textContent = `${current_image_index+1}`);
@@ -24,6 +24,9 @@
             } else {
                 document.body.dataset.screen = "nothing-open";
             }
+
+            current_image_elements[current_image_index + 1]?.decode();
+            current_image_elements[current_image_index - 1]?.decode();
         }
         function prev_image() { current_image_index -= 1; update_image(); }
         function next_image() { current_image_index += 1; update_image(); }
