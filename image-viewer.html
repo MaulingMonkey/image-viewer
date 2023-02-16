@@ -15,8 +15,12 @@
                 const image_view = document.getElementById("image-view");
                 image_view.replaceChildren(next_element);
                 try { next_element.currentTime = 0; next_element.play(); } catch (e) {} // rewind + resume
-                document.title = next_element.dataset.filename || "image viewer";
+                const filename = document.title = next_element.dataset.filename || "image viewer";
                 document.body.dataset.screen = "image-view";
+                document.querySelectorAll('[data-text-src="image-index"]'   ).forEach(e => e.textContent = `${current_image_index}`);
+                document.querySelectorAll('[data-text-src="image-no"]'      ).forEach(e => e.textContent = `${current_image_index+1}`);
+                document.querySelectorAll('[data-text-src="image-count"]'   ).forEach(e => e.textContent = `${current_image_elements.length}`);
+                document.querySelectorAll('[data-text-src="image-name"]'    ).forEach(e => e.textContent = filename);
             } else {
                 document.body.dataset.screen = "nothing-open";
             }
@@ -35,13 +39,17 @@
             const old_object_urls = current_object_urls;
             current_object_urls = [];
             current_image_elements = [];
+            document.body.dataset.screen = "loading-directory";
             await add_dir_images(current_dir_handle);
+            update_image();
             old_object_urls.forEach(url => URL.revokeObjectURL(url));
         }
 
         function create_image(url) {
             let img = new Image();
-            img.src = url;
+            img.decoding    = "async";
+            img.loading     = "lazy";
+            img.src         = url;
             return img;
         }
 
@@ -62,8 +70,14 @@
 
         const warned_exts = {};
         async function add_dir_images(dir) {
+            let handles = [];
             for await (const handle of dir.values()) {
                 //console.log(handle);
+                handles.push(handle);
+            }
+            handles.sort((a,b) => a.name.localeCompare(b.name));
+
+            for (handle of handles) {
                 switch (handle.kind) {
                     case "file":
                         let file = await handle.getFile();
@@ -93,6 +107,7 @@
                         new_element.dataset.filename = handle.name;
                         current_image_elements.push(new_element);
                         if (current_image_elements.length === 1) update_image();
+                        document.querySelectorAll('[data-text-src="image-count"]').forEach(e => e.textContent = `${current_image_elements.length}`);
 
                         break;
                     case "directory":
@@ -144,8 +159,9 @@
             width: 100vw; height: 100vh;
             display: none;
         }
-        body[data-screen="nothing-open" ] > #nothing-open   { display: block; }
-        body[data-screen="image-view"   ] > #image-view     { display: block; }
+        body[data-screen="image-view"           ] > #image-view             { display: block; }
+        body[data-screen="loading-directory"    ] > #loading-directory      { display: block; }
+        body[data-screen="nothing-open"         ] > #nothing-open           { display: block; }
 
         table.keyboard-shortcuts    { border-collapse: collapse; }
         table.keyboard-shortcuts th { text-align: left; }
@@ -178,7 +194,14 @@
             <tr><th><kbd>&nbsp;&nbsp;&nbsp;&nbsp;</kbd></th>    <td>Toggle playback</td></tr>
         </table>
     </div>
+    <div class="screen" id="loading-directory">
+        <div class="centerxy">Loaded <span data-text-src="image-count">0</span> entries</div>
+    </div>
     <div class="screen" id="image-view">
 
+    </div>
+    <div style="position: absolute; left: 0; top: 0; width: 100vw; overflow: none; padding: 0.5em; background-color: #000;">
+        #<span data-text-src="image-no">1</span> of <span data-text-src="image-count">0</span>:
+        <span data-text-src="image-name">whatever.png</span>
     </div>
 </body></html>
