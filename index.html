@@ -20,7 +20,7 @@
                 document.querySelectorAll('[data-text-src="image-index"]'   ).forEach(e => e.textContent = `${current_image_index}`);
                 document.querySelectorAll('[data-text-src="image-no"]'      ).forEach(e => e.textContent = `${current_image_index+1}`);
                 document.querySelectorAll('[data-text-src="image-count"]'   ).forEach(e => e.textContent = `${current_image_elements.length}`);
-                document.querySelectorAll('[data-text-src="image-name"]'    ).forEach(e => e.textContent = filename);
+                document.querySelectorAll('[data-text-src="image-name"]'    ).forEach(e => e.textContent = current_element.dataset.path || filename);
             } else {
                 document.body.dataset.screen = "nothing-open";
             }
@@ -110,6 +110,7 @@
                         }
 
                         new_element.dataset.filename = handle.name;
+                        new_element.dataset.path = `${current_dir_handle.name}/${handle.name}`;
                         current_image_elements.push(new_element);
                         if (current_image_elements.length === 1) update_image();
                         document.querySelectorAll('[data-text-src="image-count"]').forEach(e => e.textContent = `${current_image_elements.length}`);
