@@ -33,6 +33,13 @@
         function first_image() { current_image_index = 0; update_image(); }
         function last_image()  { current_image_index = Math.max(0, current_image_elements.length - 1); update_image(); }
 
+        function delete_image() {
+            const name = current_image_elements[current_image_index]?.dataset.filename;
+            if (name !== undefined) current_dir_handle.removeEntry(name);
+            current_image_elements.splice(current_image_index, 1);
+            update_image();
+        }
+
         function toggle_play() {
             document.getElementById("image-view").querySelectorAll("video").forEach(video => {
                 if (video.paused)   video.play();
@@ -160,6 +167,8 @@
                 case "KeyO":                        eat_event(ev); select_folder(); break;
                 case "ArrowLeft":   case "Left":    eat_event(ev); first_image(); break;
                 case "ArrowRight":  case "Right":   eat_event(ev); last_image(); break;
+            } else if (modifiers === SHIFT) switch (ev.code) {
+                case "Delete": case "Del":          eat_event(ev); delete_image(); break;
             }
         });
 
@@ -223,6 +232,7 @@
             <tr onclick="select_folder();" style="cursor: pointer;"><th><kbd>Ctrl</kbd>+<kbd>O</kbd></th>           <td>Open/Select Folder</td></tr>
             <tr><th><kbd>←</kbd>/<kbd>→</kbd></th>              <td>Previous/Next Image/Clip</td></tr>
             <tr><th><kbd>&nbsp;&nbsp;&nbsp;&nbsp;</kbd></th>    <td>Toggle playback</td></tr>
+            <tr><th><kbd>Shift</kbd>+<kbd>Del</kbd></th>        <td>Delete Image</td></tr>
         </table>
     </div>
     <div class="screen" id="loading-directory">
