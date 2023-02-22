@@ -3,6 +3,11 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <script>
+        function input_activity() {
+            document.body.dataset.mouse = "move";
+            requestAnimationFrame(function(){ document.body.dataset.mouse = "idle" });
+        }
+
         var current_dir_handle;
         var current_object_urls = [];
         var current_image_index = 0;
@@ -157,6 +162,7 @@
         }
 
         addEventListener("keydown", function (ev) {
+            input_activity();
             const [META, CTRL, ALT, SHIFT] = [1<<3, 1<<2, 1<<1, 1<<0];
             let modifiers = (ev.metaKey * META) | (ev.ctrlKey * CTRL) | (ev.altKey * ALT) | (ev.shiftKey * SHIFT);
             console.log(modifiers, ev.code, ev);
@@ -176,7 +182,12 @@
             }
         });
 
+        addEventListener("mousemove", function (ev) {
+            input_activity();
+        });
+
         addEventListener("mousedown", function (ev) {
+            input_activity();
             const [LMB, MMB, RMB, X1, X2] = [0, 1, 2, 3, 4];
             console.log(ev.button);
             switch (ev.button) {
@@ -207,6 +218,16 @@
         body[data-screen="loading-directory"    ] > #loading-directory      { display: block; }
         body[data-screen="nothing-open"         ] > #nothing-open           { display: block; }
 
+        body[data-mouse="move"] .visible-on-input-activity { opacity: 100%; }
+        body[data-mouse="idle"] .visible-on-input-activity { opacity: 0%; animation: 3s 1 normal fadeout; }
+
+        @keyframes fadeout {
+            from    { opacity: 100%; }
+            50%     { opacity: 100%; }
+            100%    { opacity: 0%; }
+            to      { visibility: hidden; }
+        }
+
         table.keyboard-shortcuts    { border-collapse: collapse; }
         table.keyboard-shortcuts th { text-align: left; }
         table.keyboard-shortcuts td { padding: 0.2em 0.5em; }
@@ -230,7 +251,7 @@
             transform: translate(-50%, -50%);
         }
     </style>
-</head><body data-screen="nothing-open">
+</head><body data-screen="nothing-open" data-mouse="idle">
     <div class="screen" id="nothing-open">
         <table class="centerxy keyboard-shortcuts">
             <tr onclick="select_folder();" style="cursor: pointer;"><th><kbd>Ctrl</kbd>+<kbd>O</kbd></th>           <td>Open/Select Folder</td></tr>
@@ -245,7 +266,7 @@
     <div class="screen" id="image-view">
 
     </div>
-    <div style="position: absolute; left: 0; top: 0; width: 100vw; overflow: none; padding: 0.5em; background-color: #000;">
+    <div style="position: absolute; left: 0; top: 0; width: 100vw; overflow: none; padding: 0.5em; background-color: #000;" class="visible-on-input-activity">
         #<span data-text-src="image-no">1</span> of <span data-text-src="image-count">0</span>:
         <span data-text-src="image-name">whatever.png</span>
     </div>
