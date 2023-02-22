@@ -168,17 +168,17 @@
             console.log(modifiers, ev.code, ev);
 
             if (modifiers === 0) switch (ev.code) {
-                case "ArrowLeft":   case "Left":    prev_image(); break;
-                case "ArrowRight":  case "Right":   next_image(); break;
-                case "Home":                        first_image(); break;
-                case "End":                         last_image(); break;
-                case "Space":                       toggle_play(); break;
+                case "ArrowLeft":   case "Left":    case "KeyA":    prev_image(); break;
+                case "ArrowRight":  case "Right":   case "KeyD":    next_image(); break;
+                case "Home":                                        first_image(); break;
+                case "End":                                         last_image(); break;
+                case "Space":                                       toggle_play(); break;
             } else if (modifiers === CTRL) switch (ev.code) {
-                case "KeyO":                        select_folder(); break;
-                case "ArrowLeft":   case "Left":    first_image(); break;
-                case "ArrowRight":  case "Right":   last_image(); break;
+                case "KeyO":                                        select_folder(); break;
+                case "ArrowLeft":   case "Left":    case "KeyA":    first_image(); break;
+                case "ArrowRight":  case "Right":   case "KeyD":    last_image(); break;
             } else if (modifiers === SHIFT) switch (ev.code) {
-                case "Delete": case "Del":          eat_event(ev); if (!ev.repeat) delete_image(); break;
+                case "Delete": case "Del":                          eat_event(ev); if (!ev.repeat) delete_image(); break;
             }
         });
 
