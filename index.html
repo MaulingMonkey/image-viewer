@@ -28,12 +28,13 @@
             current_image_elements[current_image_index + 1]?.decode();
             current_image_elements[current_image_index - 1]?.decode();
         }
-        function prev_image() { current_image_index -= 1; update_image(); }
-        function next_image() { current_image_index += 1; update_image(); }
-        function first_image() { current_image_index = 0; update_image(); }
-        function last_image()  { current_image_index = Math.max(0, current_image_elements.length - 1); update_image(); }
+        function prev_image()  { eat_event(); current_image_index -= 1; update_image(); }
+        function next_image()  { eat_event(); current_image_index += 1; update_image(); }
+        function first_image() { eat_event(); current_image_index = 0; update_image(); }
+        function last_image()  { eat_event(); current_image_index = Math.max(0, current_image_elements.length - 1); update_image(); }
 
         function delete_image() {
+            eat_event();
             const name = current_image_elements[current_image_index]?.dataset.filename;
             if (name !== undefined) current_dir_handle.removeEntry(name);
             current_image_elements.splice(current_image_index, 1);
@@ -41,6 +42,7 @@
         }
 
         function toggle_play() {
+            eat_event();
             document.getElementById("image-view").querySelectorAll("video").forEach(video => {
                 if (video.paused)   video.play();
                 else                video.pause();
@@ -134,6 +136,7 @@
         }
 
         async function select_folder() {
+            eat_event();
             let new_dir_handle = await window.showDirectoryPicker({
                 id:         "mm-image-viewer",
                 mode:       "read",
@@ -148,6 +151,7 @@
         }
 
         function eat_event(ev) {
+            ev = ev || event;
             ev.preventDefault();
             ev.stopImmediatePropagation();
         }
@@ -158,15 +162,15 @@
             console.log(modifiers, ev.code, ev);
 
             if (modifiers === 0) switch (ev.code) {
-                case "ArrowLeft":   case "Left":    eat_event(ev); prev_image(); break;
-                case "ArrowRight":  case "Right":   eat_event(ev); next_image(); break;
-                case "Home":                        eat_event(ev); first_image(); break;
-                case "End":                         eat_event(ev); last_image(); break;
-                case "Space":                       eat_event(ev); toggle_play(); break;
+                case "ArrowLeft":   case "Left":    prev_image(); break;
+                case "ArrowRight":  case "Right":   next_image(); break;
+                case "Home":                        first_image(); break;
+                case "End":                         last_image(); break;
+                case "Space":                       toggle_play(); break;
             } else if (modifiers === CTRL) switch (ev.code) {
-                case "KeyO":                        eat_event(ev); select_folder(); break;
-                case "ArrowLeft":   case "Left":    eat_event(ev); first_image(); break;
-                case "ArrowRight":  case "Right":   eat_event(ev); last_image(); break;
+                case "KeyO":                        select_folder(); break;
+                case "ArrowLeft":   case "Left":    first_image(); break;
+                case "ArrowRight":  case "Right":   last_image(); break;
             } else if (modifiers === SHIFT) switch (ev.code) {
                 case "Delete": case "Del":          eat_event(ev); if (!ev.repeat) delete_image(); break;
             }
@@ -176,9 +180,9 @@
             const [LMB, MMB, RMB, X1, X2] = [0, 1, 2, 3, 4];
             console.log(ev.button);
             switch (ev.button) {
-                case LMB: eat_event(ev); ev.stopImmediatePropagation(); prev_image(); break;
+                case LMB: prev_image(); break;
                 case MMB: break;
-                case RMB: eat_event(ev); next_image(); break;
+                case RMB: next_image(); break;
                 case X1: break;
                 case X2: break;
             }
