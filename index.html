@@ -168,7 +168,7 @@
                 case "ArrowLeft":   case "Left":    eat_event(ev); first_image(); break;
                 case "ArrowRight":  case "Right":   eat_event(ev); last_image(); break;
             } else if (modifiers === SHIFT) switch (ev.code) {
-                case "Delete": case "Del":          eat_event(ev); delete_image(); break;
+                case "Delete": case "Del":          eat_event(ev); if (!ev.repeat) delete_image(); break;
             }
         });
 
