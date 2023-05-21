@@ -38,6 +38,16 @@
         function first_image() { eat_event(); current_image_index = 0; update_image(); }
         function last_image()  { eat_event(); current_image_index = Math.max(0, current_image_elements.length - 1); update_image(); }
 
+        function goto_image(no) {
+            if (no === undefined) {
+                eat_event();
+                no = parseInt(window.prompt("Goto image:", "1"), 10);
+                if (isNaN(no)) return;
+            }
+            current_image_index = Math.max(0, Math.min(no - 1, current_image_elements.length - 1));
+            update_image();
+        }
+
         function delete_image() {
             eat_event();
             const name = current_image_elements[current_image_index]?.dataset.filename;
@@ -174,6 +184,7 @@
                 case "End":                                         last_image(); break;
                 case "Space":                                       toggle_play(); break;
             } else if (modifiers === CTRL) switch (ev.code) {
+                case "KeyG":                                        goto_image(); break;
                 case "KeyO":                                        select_folder(); break;
                 case "ArrowLeft":   case "Left":    case "KeyA":    first_image(); break;
                 case "ArrowRight":  case "Right":   case "KeyD":    last_image(); break;
