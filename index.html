@@ -30,8 +30,8 @@
                 document.body.dataset.screen = "nothing-open";
             }
 
-            current_image_elements[current_image_index + 1]?.decode();
-            current_image_elements[current_image_index - 1]?.decode();
+            current_image_elements[current_image_index + 1]?.decode?.();
+            current_image_elements[current_image_index - 1]?.decode?.();
         }
         function prev_image()  { eat_event(); current_image_index -= 1; update_image(); }
         function next_image()  { eat_event(); current_image_index += 1; update_image(); }
