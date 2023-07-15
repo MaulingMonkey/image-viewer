@@ -3,9 +3,11 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <script>
+        var input_activity_timeout = undefined;
         function input_activity() {
-            document.body.dataset.mouse = "move";
-            requestAnimationFrame(function(){ document.body.dataset.mouse = "idle" });
+            clearTimeout(input_activity_timeout);
+            document.body.dataset.input = "recent";
+            input_activity_timeout = setTimeout(function() { document.body.dataset.input = "idle" }, 1000);
         }
 
         var current_dir_handle;
@@ -229,8 +231,8 @@
         body[data-screen="loading-directory"    ] > #loading-directory      { display: block; }
         body[data-screen="nothing-open"         ] > #nothing-open           { display: block; }
 
-        body[data-mouse="move"] .visible-on-input-activity { opacity: 100%; }
-        body[data-mouse="idle"] .visible-on-input-activity { opacity: 0%; animation: 3s 1 normal fadeout; }
+        body[data-input="recent"] .visible-on-input-activity { opacity: 100%; }
+        body[data-input="idle"] .visible-on-input-activity { opacity: 0%; animation: 3s normal fadeout; }
 
         @keyframes fadeout {
             from    { opacity: 100%; }
@@ -262,7 +264,7 @@
             transform: translate(-50%, -50%);
         }
     </style>
-</head><body data-screen="nothing-open" data-mouse="idle">
+</head><body data-screen="nothing-open" data-input="idle">
     <div class="screen" id="nothing-open">
         <table class="centerxy keyboard-shortcuts">
             <tr onclick="select_folder();" style="cursor: pointer;"><th><kbd>Ctrl</kbd>+<kbd>O</kbd></th>           <td>Open/Select Folder</td></tr>
